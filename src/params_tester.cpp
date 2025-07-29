@@ -12,6 +12,7 @@ enum Command {
     cmd_exists,
     cmd_clear,
     cmd_size,
+    cmd_print,
     cmd_help,
     cmd_quit,
     cmd_unrecognized
@@ -42,6 +43,7 @@ Command which_command(const string &s) {
     if (upper == "EXISTS") return cmd_exists;
     if (upper == "CLEAR") return cmd_clear;
     if (upper == "SIZE") return cmd_size;
+    if (upper == "PRINT") return cmd_print;
     if (upper == "?") return cmd_help;
     if (upper == "Q") return cmd_quit;
 
@@ -58,6 +60,7 @@ void print_commands() {
     printf("EXISTS <key> -- Prints if a key exists.\n");
     printf("CLEAR        -- Clears the parameters.\n");
     printf("SIZE         -- Prints the number of parameters recorded.\n");
+    printf("PRINT        -- Prints the state of the internal map.\n");
     printf("?            -- Prints this message.\n");
     printf("Q            -- Quits.\n");
 }
@@ -76,7 +79,7 @@ int main(int argc, char **argv) {
         if (i != 0) printf(" ");
         printf("%s", argv[i]);
     }
-    printf("\n\n");
+    printf("\n");
 
     while (1) {
         printf("[PT] ");
@@ -151,6 +154,15 @@ int main(int argc, char **argv) {
                 }
 
                 printf("%lu\n", params.size());
+                break;
+
+            case cmd_print:
+                if (cmd_args.size() != 1) {
+                    fprintf(stderr, "usage: PRINT\n");
+                    continue;
+                }
+
+                params.print_map();
                 break;
 
             case cmd_help:
