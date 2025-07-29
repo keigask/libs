@@ -3,9 +3,6 @@
 #include <string>
 #include <unordered_map>
 
-const std::string PARAM_SENTINEL_VALUE = "*SENTINEL*";    /* Used as the value when parameters have 
-                                                             no value. */
-
 /* All exceptions are of type std::runtime_error. */
 class Params {
     public:
@@ -20,7 +17,7 @@ class Params {
                                                              exception if param_map isn't empty. */
 
         std::string get(const std::string &key) const;    /* Fetches a param from the map. Returns 
-                                                             PARAM_SENTINEL_VALUE if the key has no 
+                                                             an empty string if the key has no 
                                                              value, throws an exception if the key 
                                                              isn't present. */
         
