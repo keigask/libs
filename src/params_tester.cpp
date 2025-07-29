@@ -88,7 +88,10 @@ int main(int argc, char **argv) {
         sin.str(full_cmd);
         while (sin >> arg) cmd_args.push_back(arg);
 
-        if (cmd_args.size() == 0) return 0;
+        if (cmd_args.size() == 0) {
+            printf("\n");
+            return 0;
+        }
 
         switch (which_command(cmd_args[0])) {
             case cmd_parse:
@@ -159,7 +162,7 @@ int main(int argc, char **argv) {
                 break;
 
             default:
-                fprintf(stderr, "Unknown command: %s\n", cmd_args[1].c_str());
+                fprintf(stderr, "Unknown command: %s\n", cmd_args[0].c_str());
         }
     }
 }
