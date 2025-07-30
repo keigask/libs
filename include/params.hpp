@@ -41,4 +41,6 @@ class Params {
 
         std::unordered_map<std::string, std::string> param_map; /* The internal storage for 
                                                                    parameters. */
+
+        bool initialized;                                       /* Have we been initialized? */
 };

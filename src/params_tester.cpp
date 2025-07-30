@@ -120,6 +120,7 @@ int main(int argc, char **argv) {
 
                 try {
                     got = params.get(cmd_args[1]);
+                    printf("%s\n", got.c_str());
                 }
                 catch (runtime_error &e) {
                     fprintf(stderr, "An exception occured: %s\n", e.what());

@@ -9,13 +9,14 @@ bool starts_with_dash(const string &s) {
     return (s[0] == '-');
 }
 
+/* Default constructor. No initialization is performed here. */
 Params::Params() {
-
+    initialized = false;
 }
 
+/* Constructor that calls parse() for you. */
 Params::Params(int argc, char **argv) {
-    (void) argc;
-    (void) argv;
+    parse(argc, argv);
 }
 
 /* Parses argv and populates param_map -- initializes the class. */
@@ -23,7 +24,7 @@ void Params::parse(int argc, char **argv) {
     int i;
     string cur_key, working_val;
 
-    if (parse_map.size() != 0) {
+    if (initialized) {
         throw runtime_error("Attempted to parse parameters with parameters already stored.");
     }
 
@@ -40,34 +41,46 @@ void Params::parse(int argc, char **argv) {
 
         /* Otherwise, add what we've got to the list and reset. */
         
-        if (cur_key != "" && working_val != "") add_flag(cur_key, working_val);
+        if (cur_key != "") add_flag(cur_key, working_val);
 
         cur_key = argv[i];
         working_val = "";
     }
 
     /* Once more so we don't miss the last flag. */
-    if (cur_key != "" && working_val != "") add_flag(cur_key, working_val);
+    if (cur_key != "") add_flag(cur_key, working_val);
+
+    initialized = true;
 }
 
 string Params::get(const std::string &key) const {
-    (void) key;
+    unordered_map<string, string>::const_iterator pit;
+    string err;
 
-    return "";
+    if (!initialized) throw runtime_error("Attempt to get value while uninitialized.");
+
+    pit = param_map.find(key);
+    if (pit == param_map.end()) {
+        err = "Attempted to get value for non-existant key \'" + key + "\'."; 
+        throw runtime_error(err);
+    }
+
+    return pit->second;
 }
 
 bool Params::exists(const std::string &key) const {
-    (void) key;
-
-    return false;
+    return (param_map.find(key) != param_map.end());
 }
  
+/* Reset the class to an uninitialized state. */
 void Params::clear() {
-
+    param_map.clear();
+    initialized = false;
 }
 
+/* Fetch the map's size. */
 unsigned long Params::size() const {
-    return 0;
+    return param_map.size();
 }
 
 /* Prints the current state of the map. */
