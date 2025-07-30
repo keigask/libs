@@ -7,11 +7,11 @@
 class Params {
     public:
         Params();                                         /* Default constructor. If you use this, 
-                                                             you need to call parse_params() before
-                                                             you can do anything with the class. */
+                                                             you need to call parse() before you 
+                                                             can do anything with the class. */
 
-        Params(int argc, char **argv);                    /* Constructor that calls parse_params() 
-                                                             for you. */
+        Params(int argc, char **argv);                    /* Constructor that calls parse() for 
+                                                             you. */
 
         void parse(int argc, char **argv);                /* Initializes param_map. Throws an 
                                                              exception if param_map isn't empty, if 
