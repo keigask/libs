@@ -1,6 +1,7 @@
 #include "params.hpp"
 #include <string>
 #include <stdexcept>
+#include <cstdarg>
 using namespace std;
 
 /* Checks if a string starts with '-'. */
@@ -53,6 +54,7 @@ void Params::parse(int argc, char **argv) {
     initialized = true;
 }
 
+/* Fetch the value of a flag. */
 string Params::get(const std::string &key) const {
     unordered_map<string, string>::const_iterator pit;
     string err;
@@ -67,9 +69,63 @@ string Params::get(const std::string &key) const {
 
     return pit->second;
 }
+      
+/* Fetches the first key it can find in the series. */
+std::string Params::get_any(unsigned long count, ...) const {
+    va_list args;
+    unsigned long i;
+    bool found_it;
+    string target, cur;
 
+    if (!initialized) throw runtime_error("Attempt to get values while uninitialized.");
+    
+    va_start(args, count);
+    found_it = false;
+
+    for (i = 0; i < count; i++) {
+        cur = va_arg(args, string); 
+
+        if (exists(cur)) {
+            target = get(cur);
+            found_it = true;
+        }
+    }
+
+    va_end(args);
+
+    if (!found_it) {
+        throw runtime_error("Attempted to get value for a series of non-existant keys.");
+    }
+
+    return target;
+}
+
+/* Returns true if a flag is present in the map. */
 bool Params::exists(const std::string &key) const {
+    if (!initialized) throw runtime_error("Attempt to check values while uninitialized.");
     return (param_map.find(key) != param_map.end());
+}
+ 
+/* Returns true if any of the args are flags in the map. */
+bool Params::any_exist(unsigned long count, ...) const {
+    va_list args;
+    unsigned long i;
+    string cur;
+
+    if (!initialized) throw runtime_error("Attempt to check values while uninitialized.");
+    
+    va_start(args, count);
+
+    for (i = 0; i < count; i++) {
+        cur = va_arg(args, string); 
+
+        if (exists(cur)) {
+            return true;            
+        }
+    }
+
+    va_end(args);
+    return false;
 }
  
 /* Reset the class to an uninitialized state. */

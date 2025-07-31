@@ -22,10 +22,21 @@ class Params {
                                                              an empty string if the key has no 
                                                              value, throws an exception if the key 
                                                              isn't present. */
+
+        std::string get_any(unsigned long count, ...) const; /* Returns the value of the first flag 
+                                                                in the sequence that it finds in 
+                                                                the map. Throws an exception if 
+                                                                none of the flags were found. If 
+                                                                count is larger than the number of
+                                                                arguments given then undefined 
+                                                                behavior will occur. */
         
         bool exists(const std::string &key) const;        /* Returns true if the key is present in 
                                                              the map. */
         
+        bool any_exist(unsigned long count, ...) const;   /* Returns true if any keys are present 
+                                                             in the map. */
+
         void clear();                                     /* Clears the internal map. */
         
         unsigned long size() const;                       /* Returns the number of parameters 

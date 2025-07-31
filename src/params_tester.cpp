@@ -9,7 +9,9 @@ using namespace std;
 enum Command {
     cmd_parse,
     cmd_get,
+    cmd_get_any,
     cmd_exists,
+    cmd_any_exist,
     cmd_clear,
     cmd_size,
     cmd_print,
@@ -40,7 +42,9 @@ Command which_command(const string &s) {
     upper = to_upper(s);
     if (upper == "PARSE") return cmd_parse;
     if (upper == "GET") return cmd_get;
+    if (upper == "GET-ANY") return cmd_get_any;
     if (upper == "EXISTS") return cmd_exists;
+    if (upper == "ANY-EXIST") return cmd_any_exist;
     if (upper == "CLEAR") return cmd_clear;
     if (upper == "SIZE") return cmd_size;
     if (upper == "PRINT") return cmd_print;
@@ -55,23 +59,26 @@ void print_commands() {
     printf("All commands are case insensitive\n");
     printf("\n");
 
-    printf("PARSE        -- Parses command line arguments (ie calls parse_params())\n");
-    printf("GET <key>    -- Prints the key's value if it's present.\n");
-    printf("EXISTS <key> -- Prints if a key exists.\n");
-    printf("CLEAR        -- Clears the parameters.\n");
-    printf("SIZE         -- Prints the number of parameters recorded.\n");
-    printf("PRINT        -- Prints the state of the internal map.\n");
-    printf("?            -- Prints this message.\n");
-    printf("Q            -- Quits.\n");
+    printf("PARSE               -- Parses command line arguments (ie calls parse_params())\n");
+    printf("GET <key>           -- Prints the key's value if it's present.\n");
+    printf("EXISTS <key>        -- Prints if a key exists.\n");
+    printf("GET-ANY <keys...>   -- Prints the first value of the keys if any exist.\n");
+    printf("ANY-EXIST <keys...> -- Prints if any of a set of keys exist.\n");
+    printf("CLEAR               -- Clears the parameters.\n");
+    printf("SIZE                -- Prints the number of parameters recorded.\n");
+    printf("PRINT               -- Prints the state of the internal map.\n");
+    printf("?                   -- Prints this message.\n");
+    printf("Q                   -- Quits.\n");
 }
 
 int main(int argc, char **argv) {
     string full_cmd, arg, got;
+    string any_args[5];
     vector<string> cmd_args;
     istringstream sin;
     Params params;
     bool found_it;
-    int i;
+    int i, j;
 
     /* Print command line arguments. */
     printf("argv: ");
@@ -135,6 +142,58 @@ int main(int argc, char **argv) {
                 }
 
                 found_it = params.exists(cmd_args[1]);
+                printf("%s\n", (found_it) ? "true" : "false");
+
+                break;
+
+            case cmd_get_any:
+                if (cmd_args.size() == 1 || cmd_args.size() > 6) {
+                    fprintf(stderr, "usage: GET-ANY <up to five keys>\n");
+                    continue;
+                }
+
+                for (i = 0; i < 5; i++) {
+                    j = i + 1;
+
+                    if ((unsigned long) j < cmd_args.size()) {
+                        any_args[i] = cmd_args[j];
+                    }
+                    else {
+                        any_args[i] = "";
+                    }
+                }
+
+                try {
+                    got = params.get_any(5, any_args[0], any_args[1], any_args[2], 
+                                            any_args[3], any_args[4]);
+
+                    printf("%s\n", got.c_str());
+                }
+                catch (runtime_error &e) {
+                    fprintf(stderr, "An exception occured: %s\n", e.what());
+                }
+
+                break;
+            
+            case cmd_any_exist:
+                if (cmd_args.size() == 1 || cmd_args.size() > 6) {
+                    fprintf(stderr, "usage: ANY-EXIST <up to five keys>\n");
+                    continue;
+                }
+
+                for (i = 0; i < 5; i++) {
+                    j = i + 1;
+
+                    if ((unsigned long) j < cmd_args.size()) {
+                        any_args[i] = cmd_args[j];
+                    }
+                    else {
+                        any_args[i] = "";
+                    }
+                }
+
+                found_it = params.any_exist(5, any_args[0], any_args[1], any_args[2], 
+                                            any_args[3], any_args[4]);
                 printf("%s\n", (found_it) ? "true" : "false");
 
                 break;
